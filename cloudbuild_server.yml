@@ -1,27 +1,27 @@
 steps:
 
 - name: 'gcr.io/cloud-builders/gcloud'
-  args: ['config', 'set', 'project', 'thebridgeschool-cloud']
+  args: ['config', 'set', 'project', 'react-nodejs-cloudbuilds']
 
 # Build the container image
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/$PROJECT_ID/users-app-server:$COMMIT_SHA', '-f', 'server/Dockerfile', '.']
+  args: ['build', '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/imagenesdocker/mongo:1.0',  '-f', 'server/Dockerfile', '.']
 
 # Push the container image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/$PROJECT_ID/users-app-server:$COMMIT_SHA']
+  args: ['push', 'europe-west1-docker.pkg.dev/$PROJECT_ID/imagenesdocker/mongo:1.0']
 
 # Deploy container image to Cloud Run
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: bash
   args: [
     "-c",
-    "gcloud run deploy react-nodejs-cloudbuilds-server 
-    --image=gcr.io/$PROJECT_ID/users-app-server:$COMMIT_SHA 
-    --region=europe-west1 
-    --platform=managed 
-    --allow-unauthenticated 
-    --port=3000 
+    "gcloud run deploy react-nodejs-cloudbuilds-server
+    --image='europe-west1-docker.pkg.dev/$PROJECT_ID/imagenesdocker/mongo:1.0'
+    --region=europe-west1
+    --platform=managed
+    --allow-unauthenticated
+    --port=3000
     --update-env-vars DB_URL_ATLAS=$$DB_URL_ATLAS"
   ]
 
@@ -29,7 +29,7 @@ steps:
     'DB_URL_ATLAS'
   ]
 images:
-- 'gcr.io/$PROJECT_ID/users-app-server:$COMMIT_SHA'
+- 'europe-west1-docker.pkg.dev/$PROJECT_ID/imagenesdocker/mongo:1.0'
 
 availableSecrets:
   secretManager:
